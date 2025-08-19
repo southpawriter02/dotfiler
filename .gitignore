@@ -1,0 +1,21 @@
+# .NET Core build output
+[Bb]in/
+[Oo]bj/
+
+# User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+
+# Rider files
+.idea/
+
+# VS Code files
+.vscode/
+
+# Test results
+TestResults/

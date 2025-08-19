@@ -100,4 +100,39 @@ public class GitBackend : IVCSBackend
         }
         return output;
     }
+
+    public async Task CloneAsync(string repoUrl, string localPath)
+    {
+        // We can't use RunGitCommandAsync here because it requires the repository to exist.
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = "git",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+        processStartInfo.ArgumentList.Add("clone");
+        processStartInfo.ArgumentList.Add(repoUrl);
+        processStartInfo.ArgumentList.Add(localPath);
+
+
+        using var process = new Process { StartInfo = processStartInfo };
+        var outputBuilder = new StringBuilder();
+        var errorBuilder = new StringBuilder();
+
+        process.OutputDataReceived += (sender, e) => { if (e.Data != null) outputBuilder.AppendLine(e.Data); };
+        process.ErrorDataReceived += (sender, e) => { if (e.Data != null) errorBuilder.AppendLine(e.Data); };
+
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+
+        await process.WaitForExitAsync();
+
+        if (process.ExitCode != 0)
+        {
+            throw new Exception($"Git clone failed: {errorBuilder.ToString()}");
+        }
+    }
 }

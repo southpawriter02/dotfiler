@@ -40,6 +40,12 @@ class Program
         var statusCommand = new Command("status", "Show the status of tracked files.");
         var configCommand = new Command("config", "Manage configuration.");
 
+        var repoUrlArgument = new Argument<string>("repo-url", "The URL of the remote Git repository to install from.");
+        var installCommand = new Command("install", "Install dotfiles from a remote repository.")
+        {
+            repoUrlArgument
+        };
+
         rootCommand.Subcommands.Add(initCommand);
         rootCommand.Subcommands.Add(addCommand);
         rootCommand.Subcommands.Add(removeCommand);
@@ -47,6 +53,7 @@ class Program
         rootCommand.Subcommands.Add(syncCommand);
         rootCommand.Subcommands.Add(statusCommand);
         rootCommand.Subcommands.Add(configCommand);
+        rootCommand.Subcommands.Add(installCommand);
 
         // 3. Wire up Command Handlers (Actions)
         initCommand.SetAction(async (parseResult) =>
@@ -110,6 +117,78 @@ class Program
         });
 
         configCommand.SetAction(parseResult => { Console.WriteLine("Config command called."); });
+
+        installCommand.SetAction(async (parseResult) =>
+        {
+            var repoUrl = parseResult.GetValue(repoUrlArgument);
+            if (string.IsNullOrEmpty(repoUrl))
+            {
+                Console.Error.WriteLine("Error: Repository URL not specified.");
+                return;
+            }
+
+            if (Directory.Exists(repoPath))
+            {
+                Console.Error.WriteLine($"Error: Directory '{repoPath}' already exists. The install command is for setting up a new machine.");
+                return;
+            }
+
+            Console.WriteLine($"Cloning repository from {repoUrl} into {repoPath}...");
+            await gitBackend.CloneAsync(repoUrl, repoPath);
+            Console.WriteLine("Repository cloned successfully.");
+
+            var newManifestService = new ManifestService(repoPath);
+            await newManifestService.LoadOrCreateAsync();
+            Console.WriteLine("Manifest loaded.");
+
+            Console.WriteLine("Creating symbolic links...");
+            var homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+            foreach (var entry in newManifestService.Manifest.Entries)
+            {
+                var repoFilePath = Path.Combine(repoPath, entry.Value.Source);
+                var targetPath = Path.Combine(homePath, entry.Key);
+
+                // Ensure the target directory exists
+                var targetDir = Path.GetDirectoryName(targetPath);
+                if (!string.IsNullOrEmpty(targetDir))
+                {
+                    Directory.CreateDirectory(targetDir);
+                }
+
+                // Backup existing file if it's not already a symlink to the right place
+                if (File.Exists(targetPath) || Directory.Exists(targetPath))
+                {
+                    if (File.ResolveLinkTarget(targetPath, returnFinalTarget: true)?.FullName.Equals(repoFilePath, StringComparison.OrdinalIgnoreCase) ?? false)
+                    {
+                        Console.WriteLine($"Link already exists for {entry.Key}. Skipping.");
+                        continue;
+                    }
+
+                    var backupPath = targetPath + ".dotman-backup";
+                    Console.WriteLine($"Backing up existing file at {targetPath} to {backupPath}");
+                    File.Move(targetPath, backupPath, overwrite: true);
+                }
+
+                try
+                {
+                    Console.WriteLine($"Creating link: {targetPath} -> {repoFilePath}");
+                    File.CreateSymbolicLink(targetPath, repoFilePath);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"Failed to create symlink for {entry.Key}: {ex.Message}");
+                    // Attempt to restore backup
+                    var backupPath = targetPath + ".dotman-backup";
+                    if (File.Exists(backupPath))
+                    {
+                        File.Move(backupPath, targetPath, overwrite: true);
+                        Console.WriteLine($"Restored backup for {targetPath}.");
+                    }
+                }
+            }
+            Console.WriteLine("Installation complete.");
+        });
 
         return await rootCommand.Parse(args).InvokeAsync();
     }

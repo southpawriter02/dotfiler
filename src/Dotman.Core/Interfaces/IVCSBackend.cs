@@ -28,4 +28,11 @@ public interface IVCSBackend
     /// </summary>
     /// <returns>A string representing the repository status.</returns>
     Task<string> StatusAsync();
+
+    /// <summary>
+    /// Clones a remote repository to a local path.
+    /// </summary>
+    /// <param name="repoUrl">The URL of the remote repository.</param>
+    /// <param name="localPath">The local path to clone into.</param>
+    Task CloneAsync(string repoUrl, string localPath);
 }

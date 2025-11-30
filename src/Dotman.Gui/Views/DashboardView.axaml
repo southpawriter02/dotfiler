@@ -1,0 +1,285 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Dotman.Gui.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="Dotman.Gui.Views.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="24">
+            <!-- Header -->
+            <StackPanel Spacing="8">
+                <TextBlock Classes="h1" Text="Dashboard"/>
+                <TextBlock Classes="subtitle" Text="Overview of your dotfiles status"/>
+            </StackPanel>
+
+            <!-- Not Initialized Warning -->
+            <Border Classes="card" IsVisible="{Binding !IsInitialized}"
+                    Background="#2D1A1A" BorderBrush="#EF4444">
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="&#xE7BA;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   FontSize="24" Foreground="{DynamicResource DotmanDangerBrush}"/>
+                        <StackPanel>
+                            <TextBlock Classes="h3" Text="No Repository Configured"/>
+                            <TextBlock Classes="subtitle"
+                                       Text="Initialize a new dotfiles repository to get started"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBlock Classes="muted"
+                               Text="Go to Settings to initialize a new repository or configure an existing one."/>
+                </StackPanel>
+            </Border>
+
+            <!-- Status Cards Row -->
+            <Grid ColumnDefinitions="*, *, *, *" IsVisible="{Binding IsInitialized}">
+                <Grid.Styles>
+                    <Style Selector="Border.stat-card">
+                        <Setter Property="Margin" Value="0,0,16,0"/>
+                    </Style>
+                    <Style Selector="Grid > Border:nth-last-child(1).stat-card">
+                        <Setter Property="Margin" Value="0"/>
+                    </Style>
+                </Grid.Styles>
+
+                <!-- Total Files Card -->
+                <Border Grid.Column="0" Classes="card-hover stat-card">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border Width="36" Height="36" CornerRadius="8"
+                                    Background="#1A2A3D">
+                                <TextBlock Text="&#xE8B7;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                           FontSize="16" Foreground="{DynamicResource DotmanAccentBrush}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Classes="subtitle" Text="Total Files"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding TotalFiles}" FontSize="32" FontWeight="Bold"
+                                   Foreground="{DynamicResource DotmanTextPrimaryBrush}"/>
+                        <TextBlock Classes="muted" Text="tracked dotfiles"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Synced Files Card -->
+                <Border Grid.Column="1" Classes="card-hover stat-card">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border Width="36" Height="36" CornerRadius="8"
+                                    Background="#1A2D2A">
+                                <TextBlock Text="&#xE73E;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                           FontSize="16" Foreground="{DynamicResource DotmanSuccessBrush}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Classes="subtitle" Text="Synced"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding SyncedFiles}" FontSize="32" FontWeight="Bold"
+                                   Foreground="{DynamicResource DotmanSuccessBrush}"/>
+                        <TextBlock Classes="muted" Text="up to date"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Modified Files Card -->
+                <Border Grid.Column="2" Classes="card-hover stat-card">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border Width="36" Height="36" CornerRadius="8"
+                                    Background="#2D2A1A">
+                                <TextBlock Text="&#xE70F;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                           FontSize="16" Foreground="{DynamicResource DotmanWarningBrush}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Classes="subtitle" Text="Modified"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding ModifiedFiles}" FontSize="32" FontWeight="Bold"
+                                   Foreground="{DynamicResource DotmanWarningBrush}"/>
+                        <TextBlock Classes="muted" Text="pending changes"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Missing Files Card -->
+                <Border Grid.Column="3" Classes="card-hover stat-card">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border Width="36" Height="36" CornerRadius="8"
+                                    Background="#2D1A1A">
+                                <TextBlock Text="&#xE711;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                           FontSize="16" Foreground="{DynamicResource DotmanDangerBrush}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Classes="subtitle" Text="Missing"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding MissingFiles}" FontSize="32" FontWeight="Bold"
+                                   Foreground="{DynamicResource DotmanDangerBrush}"/>
+                        <TextBlock Classes="muted" Text="need attention"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Main Content Row -->
+            <Grid ColumnDefinitions="2*, *" IsVisible="{Binding IsInitialized}">
+                <!-- Sync Status Panel -->
+                <Border Grid.Column="0" Classes="card" Margin="0,0,16,0">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Classes="h3" Text="Sync Status"/>
+                            <Border Classes="badge-info" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding SyncStatus}" FontSize="12"
+                                           Foreground="{DynamicResource DotmanAccentBrush}"/>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Progress Bar -->
+                        <StackPanel Spacing="8">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <TextBlock Grid.Column="0" Classes="subtitle"
+                                           Text="Overall Health"/>
+                                <TextBlock Grid.Column="1" Classes="subtitle"
+                                           Text="{Binding SyncProgress, StringFormat={}{0:F0}%}"/>
+                            </Grid>
+                            <ProgressBar Minimum="0" Maximum="100"
+                                         Value="{Binding SyncProgress}"
+                                         Height="8"/>
+                        </StackPanel>
+
+                        <Separator/>
+
+                        <!-- Sync Details -->
+                        <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, *">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Classes="muted"
+                                       Text="Last Sync:" Margin="0,0,16,8"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding LastSyncTime}"
+                                       Foreground="{DynamicResource DotmanTextPrimaryBrush}"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Classes="muted"
+                                       Text="Repository:" Margin="0,0,16,8"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1"
+                                       Text="{Binding RepositoryPath}"
+                                       Foreground="{DynamicResource DotmanTextPrimaryBrush}"
+                                       TextTrimming="CharacterEllipsis"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Classes="muted"
+                                       Text="Profile:" Margin="0,0,16,0"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1"
+                                       Text="{Binding CurrentProfile}"
+                                       Foreground="{DynamicResource DotmanTextPrimaryBrush}"/>
+                        </Grid>
+
+                        <Separator/>
+
+                        <!-- Actions -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button Classes="primary" Command="{Binding SyncNowCommand}"
+                                    IsEnabled="{Binding !IsSyncing}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="&#xE895;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                                    <TextBlock Text="Sync Now"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Classes="secondary" Command="{Binding RefreshStatusCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="&#xE72C;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                                    <TextBlock Text="Refresh"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Quick Actions Panel -->
+                <Border Grid.Column="1" Classes="card">
+                    <StackPanel Spacing="16">
+                        <TextBlock Classes="h3" Text="Quick Actions"/>
+
+                        <StackPanel Spacing="8">
+                            <!-- Quick action buttons -->
+                            <Button Classes="secondary" HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <Border Width="32" Height="32" CornerRadius="6"
+                                            Background="{DynamicResource DotmanBgTertiaryBrush}">
+                                        <TextBlock Text="&#xE710;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                   FontSize="14" Foreground="{DynamicResource DotmanAccentBrush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Add File"/>
+                                        <TextBlock Classes="muted" Text="Track a new dotfile" FontSize="11"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Classes="secondary" HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <Border Width="32" Height="32" CornerRadius="6"
+                                            Background="{DynamicResource DotmanBgTertiaryBrush}">
+                                        <TextBlock Text="&#xE8A7;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                   FontSize="14" Foreground="{DynamicResource DotmanSecondaryBrush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="View Diff"/>
+                                        <TextBlock Classes="muted" Text="See pending changes" FontSize="11"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Classes="secondary" HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <Border Width="32" Height="32" CornerRadius="6"
+                                            Background="{DynamicResource DotmanBgTertiaryBrush}">
+                                        <TextBlock Text="&#xE8B7;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                   FontSize="14" Foreground="{DynamicResource DotmanPrimaryBrush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Open Repo"/>
+                                        <TextBlock Classes="muted" Text="Browse repository" FontSize="11"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Classes="secondary" HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <Border Width="32" Height="32" CornerRadius="6"
+                                            Background="{DynamicResource DotmanBgTertiaryBrush}">
+                                        <TextBlock Text="&#xE943;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                   FontSize="14" Foreground="{DynamicResource DotmanSuccessBrush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Backup All"/>
+                                        <TextBlock Classes="muted" Text="Create backup snapshot" FontSize="11"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Error Display -->
+            <Border Classes="card" IsVisible="{Binding HasError}"
+                    Background="#2D1A1A" BorderBrush="#EF4444">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <TextBlock Text="&#xE783;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                               FontSize="20" Foreground="{DynamicResource DotmanDangerBrush}"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="{DynamicResource DotmanDangerBrush}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

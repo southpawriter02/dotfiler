@@ -1,0 +1,301 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Window Style -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{DynamicResource DotmanBgPrimaryBrush}" />
+    </Style>
+
+    <!-- Card Panel Style -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource DotmanBgCardBrush}" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="BorderBrush" Value="#2A2A4A" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="Border.card-hover">
+        <Setter Property="Background" Value="{DynamicResource DotmanBgCardBrush}" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="BorderBrush" Value="#2A2A4A" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Border.card-hover:pointerover">
+        <Setter Property="BorderBrush" Value="{DynamicResource DotmanPrimaryBrush}" />
+    </Style>
+
+    <!-- Primary Button Style -->
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="{DynamicResource DotmanPrimaryBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="16,10" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15" />
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.primary:pointerover">
+        <Setter Property="Background" Value="#7C7FF5" />
+    </Style>
+
+    <Style Selector="Button.primary:pressed">
+        <Setter Property="Background" Value="#5558E3" />
+        <Setter Property="RenderTransform" Value="scale(0.98)" />
+    </Style>
+
+    <!-- Secondary Button Style -->
+    <Style Selector="Button.secondary">
+        <Setter Property="Background" Value="{DynamicResource DotmanBgTertiaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanTextPrimaryBrush}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="16,10" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="BorderBrush" Value="#3A3A5A" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15" />
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.secondary:pointerover">
+        <Setter Property="Background" Value="#303052" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DotmanPrimaryBrush}" />
+    </Style>
+
+    <!-- Success Button Style -->
+    <Style Selector="Button.success">
+        <Setter Property="Background" Value="{DynamicResource DotmanSuccessBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="16,10" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.success:pointerover">
+        <Setter Property="Background" Value="#2DD4BF" />
+    </Style>
+
+    <!-- Danger Button Style -->
+    <Style Selector="Button.danger">
+        <Setter Property="Background" Value="{DynamicResource DotmanDangerBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="16,10" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.danger:pointerover">
+        <Setter Property="Background" Value="#F87171" />
+    </Style>
+
+    <!-- Icon Button Style -->
+    <Style Selector="Button.icon-btn">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanTextSecondaryBrush}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15" />
+                <BrushTransition Property="Foreground" Duration="0:0:0.15" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.icon-btn:pointerover">
+        <Setter Property="Background" Value="{DynamicResource DotmanBgTertiaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanTextPrimaryBrush}" />
+    </Style>
+
+    <!-- Navigation Button Style -->
+    <Style Selector="RadioButton.nav-btn">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanTextSecondaryBrush}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="PART_Border"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Padding="{TemplateBinding Padding}">
+                    <ContentPresenter x:Name="PART_ContentPresenter"
+                                      Content="{TemplateBinding Content}"
+                                      HorizontalAlignment="Left"
+                                      VerticalAlignment="Center"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15" />
+                <BrushTransition Property="Foreground" Duration="0:0:0.15" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="RadioButton.nav-btn:pointerover">
+        <Setter Property="Background" Value="{DynamicResource DotmanBgTertiaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanTextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="RadioButton.nav-btn:checked">
+        <Setter Property="Background" Value="{DynamicResource DotmanPrimaryBrush}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <!-- Heading Styles -->
+    <Style Selector="TextBlock.h1">
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanTextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.h2">
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanTextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.h3">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanTextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.subtitle">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanTextSecondaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.muted">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanTextMutedBrush}" />
+    </Style>
+
+    <!-- Status Badge Styles -->
+    <Style Selector="Border.badge">
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="8,4" />
+    </Style>
+
+    <Style Selector="Border.badge-success">
+        <Setter Property="Background" Value="#1A2D2A" />
+        <Setter Property="BorderBrush" Value="#22C55E" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="8,4" />
+    </Style>
+
+    <Style Selector="Border.badge-warning">
+        <Setter Property="Background" Value="#2D2A1A" />
+        <Setter Property="BorderBrush" Value="#F59E0B" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="8,4" />
+    </Style>
+
+    <Style Selector="Border.badge-danger">
+        <Setter Property="Background" Value="#2D1A1A" />
+        <Setter Property="BorderBrush" Value="#EF4444" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="8,4" />
+    </Style>
+
+    <Style Selector="Border.badge-info">
+        <Setter Property="Background" Value="#1A2A2D" />
+        <Setter Property="BorderBrush" Value="#22D3EE" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="8,4" />
+    </Style>
+
+    <!-- TextBox Style -->
+    <Style Selector="TextBox">
+        <Setter Property="Background" Value="{DynamicResource DotmanBgTertiaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanTextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="#3A3A5A" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="CaretBrush" Value="{DynamicResource DotmanPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBox:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource DotmanPrimaryBrush}" />
+    </Style>
+
+    <!-- ListBox Style -->
+    <Style Selector="ListBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="ListBoxItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="Margin" Value="0,2" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="ListBoxItem:pointerover">
+        <Setter Property="Background" Value="{DynamicResource DotmanBgTertiaryBrush}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:selected">
+        <Setter Property="Background" Value="{DynamicResource DotmanBgTertiaryBrush}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:selected:pointerover">
+        <Setter Property="Background" Value="#303052" />
+    </Style>
+
+    <!-- ScrollViewer Style -->
+    <Style Selector="ScrollViewer">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <!-- ProgressBar Style -->
+    <Style Selector="ProgressBar">
+        <Setter Property="Background" Value="{DynamicResource DotmanBgTertiaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource DotmanPrimaryBrush}" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="MinHeight" Value="8" />
+    </Style>
+
+    <!-- Separator Style -->
+    <Style Selector="Separator">
+        <Setter Property="Background" Value="#2A2A4A" />
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="0,12" />
+    </Style>
+
+</Styles>

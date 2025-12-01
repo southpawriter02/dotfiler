@@ -1,0 +1,263 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Dotman.Gui.ViewModels"
+             xmlns:svc="using:Dotman.Gui.Services"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="Dotman.Gui.Views.FilesView"
+             x:DataType="vm:FilesViewModel">
+
+    <Grid RowDefinitions="Auto, Auto, *, Auto">
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+            <Grid ColumnDefinitions="*, Auto">
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Classes="h1" Text="Tracked Files"/>
+                    <TextBlock Classes="subtitle">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} of {1} files shown">
+                                <Binding Path="FilteredCount"/>
+                                <Binding Path="TotalCount"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </StackPanel>
+                <Button Grid.Column="1" Classes="primary"
+                        Command="{Binding ShowAddFileCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="&#xE710;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                        <TextBlock Text="Add File"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </StackPanel>
+
+        <!-- Filters and Search -->
+        <Border Grid.Row="1" Classes="card" Padding="16" Margin="0,0,0,16">
+            <Grid ColumnDefinitions="*, Auto">
+                <!-- Search Box -->
+                <TextBox Grid.Column="0" Watermark="Search files..."
+                         Text="{Binding SearchText, Mode=TwoWay}"
+                         Margin="0,0,16,0">
+                    <TextBox.InnerLeftContent>
+                        <TextBlock Text="&#xE721;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   Foreground="{DynamicResource DotmanTextMutedBrush}"
+                                   Margin="8,0,0,0" VerticalAlignment="Center"/>
+                    </TextBox.InnerLeftContent>
+                </TextBox>
+
+                <!-- Filter Buttons -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <RadioButton Classes="nav-btn" GroupName="FileFilter"
+                                 IsChecked="{Binding FilterStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}, ConverterParameter=All, Mode=OneWay}"
+                                 Command="{Binding SetFilterAllCommand}">
+                        <TextBlock Text="All"/>
+                    </RadioButton>
+                    <RadioButton Classes="nav-btn" GroupName="FileFilter"
+                                 Command="{Binding SetFilterSyncedCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Ellipse Width="8" Height="8" Fill="{DynamicResource DotmanSuccessBrush}"/>
+                            <TextBlock Text="Synced"/>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton Classes="nav-btn" GroupName="FileFilter"
+                                 Command="{Binding SetFilterModifiedCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Ellipse Width="8" Height="8" Fill="{DynamicResource DotmanWarningBrush}"/>
+                            <TextBlock Text="Modified"/>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton Classes="nav-btn" GroupName="FileFilter"
+                                 Command="{Binding SetFilterMissingCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Ellipse Width="8" Height="8" Fill="{DynamicResource DotmanDangerBrush}"/>
+                            <TextBlock Text="Missing"/>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Files List -->
+        <Border Grid.Row="2" Classes="card" Padding="0">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Files}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FileItemViewModel">
+                            <Border Padding="16,12" BorderBrush="#2A2A4A" BorderThickness="0,0,0,1"
+                                    Background="Transparent"
+                                    Cursor="Hand">
+                                <Border.Styles>
+                                    <Style Selector="Border:pointerover">
+                                        <Setter Property="Background" Value="{DynamicResource DotmanBgTertiaryBrush}"/>
+                                    </Style>
+                                </Border.Styles>
+                                <Grid ColumnDefinitions="Auto, *, Auto, Auto">
+                                    <!-- File Icon -->
+                                    <Border Grid.Column="0" Width="40" Height="40"
+                                            CornerRadius="8" Margin="0,0,16,0"
+                                            Background="{DynamicResource DotmanBgTertiaryBrush}">
+                                        <TextBlock Text="&#xE8A5;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                   FontSize="18" Foreground="{DynamicResource DotmanPrimaryBrush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <!-- File Info -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                                        <TextBlock Text="{Binding FileName}"
+                                                   FontSize="14" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource DotmanTextPrimaryBrush}"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <TextBlock Text="{Binding SourcePath}"
+                                                       Classes="muted" FontSize="12"/>
+                                            <Border Classes="badge" Padding="6,2"
+                                                    Background="{DynamicResource DotmanBgTertiaryBrush}">
+                                                <TextBlock Text="{Binding Profile}"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource DotmanTextSecondaryBrush}"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <!-- Status Badge -->
+                                    <Border Grid.Column="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <Border.Styles>
+                                            <Style Selector="Border.status-synced">
+                                                <Setter Property="Background" Value="#1A2D2A"/>
+                                                <Setter Property="BorderBrush" Value="#22C55E"/>
+                                            </Style>
+                                            <Style Selector="Border.status-modified">
+                                                <Setter Property="Background" Value="#2D2A1A"/>
+                                                <Setter Property="BorderBrush" Value="#F59E0B"/>
+                                            </Style>
+                                            <Style Selector="Border.status-missing">
+                                                <Setter Property="Background" Value="#2D1A1A"/>
+                                                <Setter Property="BorderBrush" Value="#EF4444"/>
+                                            </Style>
+                                        </Border.Styles>
+                                        <Border CornerRadius="6" Padding="10,4"
+                                                BorderThickness="1"
+                                                Classes.status-synced="{Binding Status, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static svc:FileStatus.Synced}}"
+                                                Classes.status-modified="{Binding Status, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static svc:FileStatus.Modified}}"
+                                                Classes.status-missing="{Binding Status, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static svc:FileStatus.Missing}}">
+                                            <TextBlock Text="{Binding StatusDisplay}" FontSize="12"/>
+                                        </Border>
+                                    </Border>
+
+                                    <!-- Actions -->
+                                    <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4"
+                                                VerticalAlignment="Center">
+                                        <Button Classes="icon-btn" ToolTip.Tip="Open file location">
+                                            <TextBlock Text="&#xE8DA;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                       FontSize="14"/>
+                                        </Button>
+                                        <Button Classes="icon-btn" ToolTip.Tip="View diff">
+                                            <TextBlock Text="&#xE8A7;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                       FontSize="14"/>
+                                        </Button>
+                                        <Button Classes="icon-btn" ToolTip.Tip="Remove from tracking"
+                                                Command="{Binding $parent[ItemsControl].((vm:FilesViewModel)DataContext).RemoveFileCommand}"
+                                                CommandParameter="{Binding}">
+                                            <TextBlock Text="&#xE74D;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                       FontSize="14" Foreground="{DynamicResource DotmanDangerBrush}"/>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Empty State -->
+        <Border Grid.Row="2" IsVisible="{Binding !Files.Count}"
+                HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Spacing="16" HorizontalAlignment="Center">
+                <Border Width="64" Height="64" CornerRadius="32"
+                        Background="{DynamicResource DotmanBgTertiaryBrush}"
+                        HorizontalAlignment="Center">
+                    <TextBlock Text="&#xE8B7;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                               FontSize="28" Foreground="{DynamicResource DotmanTextMutedBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="No files found" Classes="h3"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Add some dotfiles to start tracking them"
+                           Classes="muted" HorizontalAlignment="Center"/>
+                <Button Classes="primary" HorizontalAlignment="Center"
+                        Command="{Binding ShowAddFileCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="&#xE710;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                        <TextBlock Text="Add Your First File"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Error Display -->
+        <Border Grid.Row="3" Classes="card" Margin="0,16,0,0"
+                IsVisible="{Binding HasError}"
+                Background="#2D1A1A" BorderBrush="#EF4444">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <TextBlock Text="&#xE783;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                           FontSize="20" Foreground="{DynamicResource DotmanDangerBrush}"
+                           VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="{DynamicResource DotmanDangerBrush}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Add File Dialog Overlay -->
+        <Border Grid.RowSpan="4"
+                Background="#80000000"
+                IsVisible="{Binding ShowAddFileDialog}">
+            <Border Classes="card" Width="500"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel Spacing="20">
+                    <StackPanel Spacing="4">
+                        <TextBlock Classes="h2" Text="Add File"/>
+                        <TextBlock Classes="subtitle"
+                                   Text="Enter the path to the dotfile you want to track"/>
+                    </StackPanel>
+
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="subtitle" Text="File Path"/>
+                        <TextBox Text="{Binding NewFilePath, Mode=TwoWay}"
+                                 Watermark="e.g., ~/.bashrc or /home/user/.vimrc"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="12"
+                                HorizontalAlignment="Right">
+                        <Button Classes="secondary"
+                                Command="{Binding CancelAddFileCommand}">
+                            Cancel
+                        </Button>
+                        <Button Classes="primary"
+                                Command="{Binding AddFileCommand}"
+                                IsEnabled="{Binding !IsProcessing}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="&#xE710;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                                <TextBlock Text="Add File"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <!-- Loading Overlay -->
+        <Border Grid.RowSpan="4"
+                Background="#80000000"
+                IsVisible="{Binding IsLoading}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+                <ProgressBar IsIndeterminate="True" Width="200"/>
+                <TextBlock Text="Loading files..."
+                           Foreground="{DynamicResource DotmanTextPrimaryBrush}"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,301 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Dotman.Gui.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
+             x:Class="Dotman.Gui.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="24">
+            <!-- Header -->
+            <StackPanel Spacing="8">
+                <TextBlock Classes="h1" Text="Settings"/>
+                <TextBlock Classes="subtitle" Text="Configure your dotfile manager"/>
+            </StackPanel>
+
+            <!-- Status Message -->
+            <Border Classes="card" IsVisible="{Binding ShowStatus}"
+                    Padding="16">
+                <Border.Styles>
+                    <Style Selector="Border.status-success">
+                        <Setter Property="Background" Value="#1A2D2A"/>
+                        <Setter Property="BorderBrush" Value="#22C55E"/>
+                    </Style>
+                    <Style Selector="Border.status-info">
+                        <Setter Property="Background" Value="#1A2A2D"/>
+                        <Setter Property="BorderBrush" Value="#22D3EE"/>
+                    </Style>
+                    <Style Selector="Border.status-warning">
+                        <Setter Property="Background" Value="#2D2A1A"/>
+                        <Setter Property="BorderBrush" Value="#F59E0B"/>
+                    </Style>
+                    <Style Selector="Border.status-danger">
+                        <Setter Property="Background" Value="#2D1A1A"/>
+                        <Setter Property="BorderBrush" Value="#EF4444"/>
+                    </Style>
+                </Border.Styles>
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <TextBlock Text="&#xE73E;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                               FontSize="16" Foreground="{DynamicResource DotmanSuccessBrush}"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Foreground="{DynamicResource DotmanTextPrimaryBrush}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Not Initialized - Init Card -->
+            <Border Classes="card" IsVisible="{Binding !IsInitialized}">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Border Width="48" Height="48" CornerRadius="12"
+                                Background="{DynamicResource DotmanGradientBrush}">
+                            <TextBlock Text="&#xE8F1;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                       FontSize="24" Foreground="White"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Classes="h3" Text="Initialize Repository"/>
+                            <TextBlock Classes="subtitle"
+                                       Text="Set up a new dotfiles repository to get started"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <TextBlock Classes="muted" TextWrapping="Wrap">
+                        Create a new repository to start tracking your configuration files.
+                        You can also configure an existing repository if you have one.
+                    </TextBlock>
+
+                    <Button Classes="primary" Command="{Binding ShowInitializeDialogCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="&#xE710;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                            <TextBlock Text="Initialize Repository"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- Repository Settings -->
+            <Border Classes="card" IsVisible="{Binding IsInitialized}">
+                <StackPanel Spacing="20">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="&#xE8B7;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   FontSize="20" Foreground="{DynamicResource DotmanPrimaryBrush}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Classes="h3" Text="Repository" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="150, *">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Classes="subtitle"
+                                   Text="Path" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                            <TextBox Text="{Binding RepositoryPath}" IsReadOnly="True"
+                                     HorizontalAlignment="Stretch" MinWidth="300"/>
+                            <Button Classes="secondary" Command="{Binding OpenRepositoryFolderCommand}"
+                                    ToolTip.Tip="Open folder">
+                                <TextBlock Text="&#xE8DA;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                            </Button>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Classes="subtitle" Margin="0,16,0,0"
+                                   Text="Profile" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Margin="0,16,0,0"
+                                 Text="{Binding CurrentProfile, Mode=TwoWay}"
+                                 Watermark="e.g., common, work, home"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Classes="subtitle" Margin="0,16,0,0"
+                                   Text="Remote URL" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Margin="0,16,0,0"
+                                 Text="{Binding RemoteUrl, Mode=TwoWay}"
+                                 Watermark="git@github.com:user/dotfiles.git"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Sync Settings -->
+            <Border Classes="card" IsVisible="{Binding IsInitialized}">
+                <StackPanel Spacing="20">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="&#xE895;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   FontSize="20" Foreground="{DynamicResource DotmanAccentBrush}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Classes="h3" Text="Synchronization" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto">
+                        <!-- Auto Sync Toggle -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Auto-sync" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource DotmanTextPrimaryBrush}"/>
+                            <TextBlock Classes="muted" TextWrapping="Wrap">
+                                Automatically sync changes at regular intervals
+                            </TextBlock>
+                        </StackPanel>
+                        <ToggleSwitch Grid.Row="0" Grid.Column="1"
+                                      IsChecked="{Binding AutoSyncEnabled, Mode=TwoWay}"
+                                      VerticalAlignment="Center"/>
+
+                        <!-- Sync Interval -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4" Margin="0,20,0,0"
+                                    IsEnabled="{Binding AutoSyncEnabled}">
+                            <TextBlock Text="Sync interval (minutes)" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource DotmanTextPrimaryBrush}"/>
+                            <TextBlock Classes="muted">
+                                How often to check for changes
+                            </TextBlock>
+                        </StackPanel>
+                        <NumericUpDown Grid.Row="1" Grid.Column="1" Margin="0,20,0,0"
+                                       Value="{Binding AutoSyncIntervalMinutes, Mode=TwoWay}"
+                                       Minimum="5" Maximum="1440" Increment="5"
+                                       IsEnabled="{Binding AutoSyncEnabled}"
+                                       VerticalAlignment="Center" Width="120"/>
+
+                        <!-- Backup Before Sync -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Spacing="4" Margin="0,20,0,0">
+                            <TextBlock Text="Backup before sync" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource DotmanTextPrimaryBrush}"/>
+                            <TextBlock Classes="muted" TextWrapping="Wrap">
+                                Create backup copies before syncing changes
+                            </TextBlock>
+                        </StackPanel>
+                        <ToggleSwitch Grid.Row="2" Grid.Column="1" Margin="0,20,0,0"
+                                      IsChecked="{Binding BackupBeforeSync, Mode=TwoWay}"
+                                      VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Notifications Settings -->
+            <Border Classes="card" IsVisible="{Binding IsInitialized}">
+                <StackPanel Spacing="20">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="&#xE7E7;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   FontSize="20" Foreground="{DynamicResource DotmanWarningBrush}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Classes="h3" Text="Notifications" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*, Auto">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Show notifications" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource DotmanTextPrimaryBrush}"/>
+                            <TextBlock Classes="muted" TextWrapping="Wrap">
+                                Display system notifications for sync events and errors
+                            </TextBlock>
+                        </StackPanel>
+                        <ToggleSwitch Grid.Column="1"
+                                      IsChecked="{Binding ShowNotifications, Mode=TwoWay}"
+                                      VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- About Section -->
+            <Border Classes="card">
+                <StackPanel Spacing="20">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="&#xE946;" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   FontSize="20" Foreground="{DynamicResource DotmanSecondaryBrush}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Classes="h3" Text="About" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="150, *">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Classes="muted" Text="Version"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                   Text="{Binding AppVersion}"
+                                   Foreground="{DynamicResource DotmanTextPrimaryBrush}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Classes="muted" Text=".NET Version"
+                                   Margin="0,8,0,0"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,8,0,0"
+                                   Text="{Binding DotNetVersion}"
+                                   Foreground="{DynamicResource DotmanTextPrimaryBrush}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Classes="muted" Text="Platform"
+                                   Margin="0,8,0,0"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,8,0,0"
+                                   Text="{Binding Platform}"
+                                   Foreground="{DynamicResource DotmanTextPrimaryBrush}"/>
+                    </Grid>
+
+                    <Separator/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Button Classes="secondary" Command="{Binding OpenConfigFileCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="&#xE8A5;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                                <TextBlock Text="Open Config"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Save/Reset Buttons -->
+            <Grid ColumnDefinitions="*, Auto" IsVisible="{Binding IsInitialized}">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                    <Button Classes="secondary" Command="{Binding ResetSettingsCommand}"
+                            IsEnabled="{Binding HasUnsavedChanges}">
+                        Reset
+                    </Button>
+                    <Button Classes="primary" Command="{Binding SaveSettingsCommand}"
+                            IsEnabled="{Binding HasUnsavedChanges}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="&#xE74E;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                            <TextBlock Text="Save Changes"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+
+    <!-- Initialize Dialog Overlay -->
+    <Panel IsVisible="{Binding ShowInitDialog}">
+        <Border Background="#80000000"/>
+        <Border Classes="card" Width="500"
+                HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Spacing="20">
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="h2" Text="Initialize Repository"/>
+                    <TextBlock Classes="subtitle"
+                               Text="Create a new dotfiles repository"/>
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                    <TextBlock Classes="subtitle" Text="Repository Path"/>
+                    <Grid ColumnDefinitions="*, Auto">
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding NewRepoPath, Mode=TwoWay}"
+                                 Watermark="~/.dotfiles"/>
+                        <Button Grid.Column="1" Classes="secondary" Margin="8,0,0,0"
+                                Command="{Binding BrowseForRepositoryCommand}">
+                            Browse
+                        </Button>
+                    </Grid>
+                    <TextBlock Classes="muted"
+                               Text="This is where your dotfiles will be stored and versioned"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="12"
+                            HorizontalAlignment="Right">
+                    <Button Classes="secondary"
+                            Command="{Binding CancelInitializeCommand}">
+                        Cancel
+                    </Button>
+                    <Button Classes="primary"
+                            Command="{Binding InitializeRepositoryCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="&#xE8F1;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                            <TextBlock Text="Initialize"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Panel>
+</UserControl>
